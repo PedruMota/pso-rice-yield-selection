@@ -1,0 +1,2 @@
+modelo_teste <- lmer(final_form, data = data_train, REML = FALSE)
+predict(modelo_teste, newdata = data_test, allow.new.levels = TRUE)

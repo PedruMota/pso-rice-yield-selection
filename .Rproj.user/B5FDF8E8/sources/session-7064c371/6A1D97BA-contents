@@ -55,7 +55,7 @@ get_cv_error <- function(model_type, formula_str, data, response_var, k = 5) {
   # REPRODUCIBILITY:
   # We set a seed inside the function to ensure the folds are identical 
   # for every particle in the swarm. This ensures fair comparison.
-  set.seed(999) 
+  set.seed(6) 
   
   # Create stratified folds if possible
   folds <- caret::createFolds(data[[response_var]], k = k, list = TRUE, returnTrain = FALSE)
