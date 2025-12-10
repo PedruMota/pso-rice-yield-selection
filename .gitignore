@@ -1,0 +1,15 @@
+# --- R syst files ---
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# --- Data ---
+data/*.csv
+
+# --- Outputs ---
+#output/*.rds
+
+# --- OS files ---
+.DS_Store
+Thumbs.db

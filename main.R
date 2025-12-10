@@ -41,7 +41,7 @@ data_test  <- data_full[-idx, ]
 
 # 3. Configuration -------------------------------------------------------------
 RESPONSE_VAR <- "GY"
-MODEL_TYPE   <- "rf" # Options: "lm", "lmer", "rf"
+MODEL_TYPE   <- "lmer" # Options: "lm", "lmer", "rf"
 COMPLEXITY_PENALTY <- 5.0
 
 # Define Candidate Variables (Exclude metadata and response)
