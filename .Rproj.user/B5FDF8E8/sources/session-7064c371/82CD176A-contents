@@ -1,0 +1,51 @@
+# R/generate_synthetic.R
+
+generate_synthetic_data <- function(n = 1000, output_path = "data/train_data.csv") {
+  
+  # generating random variables based on the original dataset summary
+  df <- data.frame(
+    YEAR = sample(1980:2022, n, replace = TRUE),
+    SYST = sample(c("S1", "S2"), n, replace = TRUE),
+    ST = sample(c("GO", "MT", "RO", "TO"), n, replace = TRUE),
+    LOC = sample(paste0("LOC", 1:10), n, replace = TRUE),
+    GEN = sample(paste0("GEN", 1:20), n, replace = TRUE),
+    DTF = runif(n, 54, 116),
+    
+    # phenotypic variables
+    PHT = runif(n, 55, 165),
+    LOD = sample(1:9, n, replace = TRUE),
+    LBL = sample(1:7, n, replace = TRUE),
+    PBL = sample(1:9, n, replace = TRUE),
+    BSP = sample(1:9, n, replace = TRUE),
+    LSC = sample(1:8, n, replace = TRUE),
+    GDS = sample(1:8, n, replace = TRUE),
+    
+    # climatic variables
+    PRECTOT_ACC = runif(n, 60, 1600),
+    T2M_MEAN = runif(n, 21, 29),
+    RH2M_MEAN = runif(n, 60, 95),
+    ALLSKY_SFC_SW_DWN_ACC = runif(n, 1500, 3500)
+  )
+  
+  # adding noise and other generic numeric columns
+  missing_cols <- c("LATITUDE", "LONGITUDE", "ANOM", "WS2M_MEAN", "T2MDEW_MEAN", "GDD_ACC") 
+  for(col in missing_cols) {
+    df[[col]] <- runif(n, 0, 100)
+  }
+  
+  # creating a linear relationship with noise for the GY (Yield)
+  df$GY <- 1000 + 
+    (15 * df$PHT) + 
+    (0.8 * df$PRECTOT_ACC) + 
+    (10 * df$T2M_MEAN) +
+    rnorm(n, mean = 0, sd = 500)
+  
+  # ensure a positive and realistic range.
+  df$GY <- ifelse(df$GY < 0, 500, df$GY)
+  
+  # create directory if it doesn't exist.
+  if(!dir.exists(dirname(output_path))) dir.create(dirname(output_path))
+  
+  write.csv(df, output_path, row.names = FALSE)
+  message("Synthetic data generated at: ", output_path)
+}

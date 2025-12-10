@@ -1,0 +1,26 @@
+{
+    "id": "12B6DABD",
+    "path": "C:/Users/pedro/Documents/GitHub/portfolio/pso-rice-yield-selection/R/generate_synthetic.R",
+    "project_path": "R/generate_synthetic.R",
+    "type": "r_source",
+    "hash": "620343317",
+    "contents": "",
+    "dirty": false,
+    "created": 1765329784231.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "70,1",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1765332834,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1765332834319,
+    "read_only": false,
+    "read_only_alternatives": []
+}

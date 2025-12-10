@@ -1,0 +1,83 @@
+# ========== Configurações e Pacotes ==========
+if(!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
+pacman::p_load(tidyverse, pso, Metrics, glmmTMB, lme4)
+
+# ========== Processamentos dos dados ==========
+setwd("C:/Users/pedro/Documents/pmota/faculdade/Introdução à Machine Learning/trabalhos")
+
+raw_data <- read_csv("data/dados_treino.csv")
+
+source("auxi/process_data2.R")
+data1 <- process_data(raw_data)
+
+raw_data_teste<- read_csv("data/dados_teste_teste.csv")
+data_teste <- process_data(raw_data_teste)
+
+
+# ========== Seleção ==========
+
+response <- "GY"
+candidate_vars <- setdiff(names(data1), response)
+
+# ===================== FUNÇÃO FITNESS =====================
+fitness<- function(x) {
+  selected_vars <- candidate_vars[as.logical(round(x))]
+  
+  if(length(selected_vars) == 0) {
+    return(1e6)
+  }
+  
+  form <- as.formula(paste(response, "~", paste(selected_vars, collapse = " + ")))
+  
+  fit <- tryCatch(lm(form, data = data1),
+                  error = function(e) NULL)
+  
+  if(is.null(fit)) return(1e6)
+  
+  preds <- tryCatch(predict(fit, newdata = data1, type = "response"),
+                    error = function(e) rep(mean(data1[[response]]), nrow(data1)))
+  
+  mae_train <- mae(data1[[response]], preds)
+  
+  penalty_val <- length(selected_vars) * 10
+  
+  return(mae_train + penalty_val)
+}
+
+# ===================== RODAR PSO =====================
+pso_res <- psoptim(par = rep(0, length(candidate_vars)),
+                   fn = fitness,
+                   lower = rep(0, length(candidate_vars)),
+                   upper = rep(1, length(candidate_vars)),
+                   control = list(maxit = 100, s = 60))
+
+best_sol <- round(pso_res$par)
+selected_vars <- candidate_vars[best_sol == 1]
+
+cat("Variáveis selecionadas:\n")
+print(selected_vars)
+
+# ===================== AJUSTE MODELO FINAL =====================
+final_formula <- as.formula(paste(response, "~", paste(selected_vars, collapse = " + ")))
+final_model <- lm(final_formula, data = data1)
+
+#final_model <- glm(final_formula, data = data1, family = Gamma(link = "inverse"))
+#final_model <- lmer(final_formula, data = data1)
+#final_model<- glmmTMB(final_formula, family = Gamma(link = "log"), data = data1)
+
+# ===================== AVALIAÇÃO e SAVE =====================
+# MAE treino
+pred_train <- predict(final_model, newdata = data1, type = "response")
+mae_train <- mae(data1[[response]], pred_train)
+
+# MAE teste
+pred_test <- predict(final_model, newdata = data_teste, type = "response")
+mae_test <- mae(data_teste[[response]], pred_test)
+
+cat("\nMAE treino:", mae_train, "\n")
+cat("MAE teste:", mae_test, "\n")
+
+
+saveRDS(final_model, file = "topico2/modelo_final_lmer_pso1.rds")
+
+
