@@ -106,7 +106,6 @@ pso_res <- psoptim(
 best_sol <- round(pso_res$par)
 final_vars <- candidate_vars[best_sol == 1]
 
-cat("\n==============================================\n")
 cat("Total Variables Selected:", length(final_vars), "\n")
 cat("Selected Variables:", paste(final_vars, collapse = ", "), "\n")
 
