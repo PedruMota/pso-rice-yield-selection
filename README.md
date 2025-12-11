@@ -14,7 +14,7 @@ Predicting crop yield is a high-dimensional problem. Agronomists and Data Scient
 
 This project implements a **meta-heuristic wrapper** around Machine Learning models. Instead of using traditional Stepwise methods, I deployed a **Particle Swarm Optimization (PSO)** algorithm to navigate the complex search space and find the optimal subset of variables that minimizes error while maximizing model simplicity.
 
-**Key Achievement:** The algorithm successfully reduces 60+ noisy predictors to a robust subset of <10 key drivers, maintaining high predictive accuracy on unseen data.
+**Key Achievement:** The algorithm successfully reduces 50+ noisy predictors to a robust subset of <10 key drivers, maintaining high predictive accuracy on unseen data.
 
 ---
 
@@ -59,40 +59,42 @@ The framework is **Model Agnostic**, allowing the user to switch the evaluation 
 This project includes a **Synthetic Data Generator** that simulates realistic agronomic conditions (Phenotypes, Climate, and Soil interactions) while preserving data privacy.
 
 1. **Clone the repository:**
+   ```bash
    git clone [https://github.com/your-username/pso-rice-yield-selection.git](https://github.com/your-username/pso-rice-yield-selection.git)
+   ```
    
-2. Open the Project: Double-click rice-yield-optimization.Rproj to open RStudio with the correct environment context.
+2. **Open the Project**: Double-click rice-yield-optimization.Rproj to open RStudio with the correct environment context.
 
-3. Run the Pipeline: Open main.R and execute.
-  Note: The script will automatically check for data. If missing, it triggers R/generate_synthetic.R to create a fresh dataset.
+3. **Run the Pipeline**: Open main.R and execute.
+  *Note*: The script will automatically check for data. If missing, it triggers R/generate_synthetic.R to create a fresh dataset.
   
 
-📊 Project Structure
+## 📊 Project Structure
 
+
+```text
 rice-yield-optimization/
-├── data/                  # Generated synthetic datasets
+├── data/                  # Generated synthetic datasets (excluded from git)
 ├── output/                # Logs, saved models (.rds), and PSO results
 ├── R/                     # Modularized functions
 │   ├── generate_synthetic.R  # Simulates agronomic data logic
 │   ├── model_utils.R         # Wrapper for LM/RF training & CV
-│   └── process_data.R       # Data cleaning pipeline
+│   └── process_data.R        # Data cleaning pipeline
 ├── main.R                 # Orchestrator script (Configuration & Execution)
 ├── .gitignore             # Git configuration
 └── README.md              # Documentation
+```
 
+## 🔮 Roadmap & Contributions
 
-🔮 Roadmap & Contributions
 This project is a proof-of-concept for my portfolio, and there is significant room for improvement. I am actively studying Data Engineering and ML to enhance it.
 
-Future Improvements:
+**Future Improvements:**
 
-[ ] XGBoost Integration: Implement Gradient Boosting to handle residuals better than RF.
-
-[ ] Hyperparameter Tuning: Add a nested optimization loop to tune mtry (RF) or lambda (LM) simultaneously with feature selection.
-
-[ ] Dockerization: Containerize the environment to ensure full reproducibility across OSs.
-
-[ ] MLOps Logging: Integrate mlflow to track experiments and metrics visualization.
+- [ ] **XGBoost Integration:** Implement Gradient Boosting to handle residuals better than RF.
+- [ ] **Hyperparameter Tuning:** Add a nested optimization loop to tune `mtry` (RF) or `lambda` (LM) simultaneously with feature selection.
+- [ ] **Dockerization:** Containerize the environment to ensure full reproducibility across OSs.
+- [ ] **MLOps Logging:** Integrate `mlflow` to track experiments and metrics visualization.
 
 Feedback is welcome! If you have suggestions on code optimization or statistical rigor, please open an Issue or reach out on LinkedIn.
 
