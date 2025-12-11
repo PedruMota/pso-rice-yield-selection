@@ -15,7 +15,7 @@
 
 # 1. Setup ---------------------------------------------------------------------
 if(!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
-pacman::p_load(tidyverse, pso, Metrics, lme4, ranger, here, caret)
+pacman::p_load(tidyverse, pso, Metrics, xgboost, ranger, here, caret)
 
 # Global Seed for Reproducibility
 set.seed(6)
@@ -41,8 +41,16 @@ data_test  <- data_full[-idx, ]
 
 # 3. Configuration -------------------------------------------------------------
 RESPONSE_VAR <- "GY"
-MODEL_TYPE   <- "lmer" # Options: "lm", "lmer", "rf"
-COMPLEXITY_PENALTY <- 5.0
+MODEL_TYPE   <- "rf" # Options: "lm", "rf"
+
+# Dynamic Penalty
+# We calculate the Standard Deviation of the target variable in the training set.
+sd_y <- sd(data_train[[RESPONSE_VAR]], na.rm = TRUE)
+
+# We define the penalty as a percentage of the data variability.
+# It means a variable must explain at least ~1.5% of the remaining variance to be kept.
+PENALTY_FACTOR <- 0.015
+COMPLEXITY_PENALTY <- sd_y * PENALTY_FACTOR
 
 # Define Candidate Variables (Exclude metadata and response)
 ignore_vars <- c(RESPONSE_VAR, "GEN", "LOC", "ST", "YEAR") 
@@ -55,13 +63,13 @@ num_vars <- candidate_vars[sapply(data_train[candidate_vars], is.numeric)]
 cor_vals <- abs(cor(data_train[num_vars], data_train[[RESPONSE_VAR]], use="complete.obs"))
 
 # Select potential top predictors
-top_10 <- rownames(cor_vals)[order(cor_vals, decreasing = TRUE)][1:10]
+top_5 <- rownames(cor_vals)[order(cor_vals, decreasing = TRUE)][1:5]
 
 # Create a "Best Guess" vector (Warm Start)
 par_init <- rep(0, n_vars)
 
-if(length(top_10) > 0) {
-  idx_10 <- match(top_10, candidate_vars)
+if(length(top_5) > 0) {
+  idx_10 <- match(top_5, candidate_vars)
   par_init[idx_10] <- 1
 }
 
@@ -69,28 +77,16 @@ if(length(top_10) > 0) {
 # 5. Fitness Function (Wrapper) ------------------------------------------------
 fitness_wrapper <- function(x) {
   
-  # Decode binary selection
   selected_vars <- candidate_vars[x >= 0.5]
-  
-  # Hard constraint: Model must have at least one variable
   if(length(selected_vars) == 0) return(1e7)
   
-  # Construct Formula
   fixed_part <- paste(selected_vars, collapse = " + ")
+  form_str <- paste(RESPONSE_VAR, "~", fixed_part)
   
-  if(MODEL_TYPE == "lmer") {
-    form_str <- paste(RESPONSE_VAR, "~", fixed_part, "+ (1|GEN)")
-  } else {
-    form_str <- paste(RESPONSE_VAR, "~", fixed_part)
-  }
+  # k=5 for robustness
+  cv_mae <- get_cv_error(MODEL_TYPE, form_str, data_train, RESPONSE_VAR, k = 5)
   
-  # Call Cross-Validation
-  cv_mae <- get_cv_error(MODEL_TYPE, form_str, data_train, RESPONSE_VAR, k = 3)
-  
-  # Complexity Penalty
-  # Balances accuracy vs model size
-  penalty <- length(selected_vars) * 2 
-  
+  penalty <- length(selected_vars) * COMPLEXITY_PENALTY 
   return(cv_mae + penalty)
 }
 
@@ -141,8 +137,8 @@ if(!dir.exists(here("output"))) dir.create(here("output"))
 
 # Save Optimization Results (PSO)
 # Saves the raw output from the algorithm (convergence, history, best par)
-saveRDS(pso_res, here("output", "pso_results.rds"))
-message("PSO optimization results saved to output/pso_results.rds")
+saveRDS(pso_res, here("output", paste0("pso_results_", MODEL_TYPE, ".rds")))
+message(paste0("PSO optimization results saved to output/pso_results_", MODEL_TYPE,".rds"))
 
 # Retrain & Save Final Model Object ---
 # We explicitly refit the model on the training set to create a deploy-able artifact.

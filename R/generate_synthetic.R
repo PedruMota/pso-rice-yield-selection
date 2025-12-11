@@ -62,17 +62,18 @@ generate_synthetic_data <- function(n = 600, output_path = "data/train_data.csv"
   # + Interaction: Rain is only beneficial if Temp is within optimal range
   
   # Random effect for Genotype (Intercept variation)
-  gen_effects <- rnorm(25, mean = 0, sd = 300)
+  gen_effects <- rnorm(25, mean = 0, sd = 150)
   names(gen_effects) <- paste0("GEN", 1:25)
   
-  df$GY <- 2000 + 
-    (15 * df$PHT) +                         # Linear: Taller plants -> more yield
-    (-2 * (df$DTF - 85)^2) +                # Non-linear: Bell curve peaking at 85 days
-    (0.05 * df$PRECTOT_ACC * df$T2M_MEAN) + # Interaction: Rain * Temp
-    (25 * df$SOLAR_RAD) +                   # Linear: More Sun = More Photosynthesis
-    (-15 * df$T2M_MAX) +                    # Linear: Heat Stress (High Max Temp reduces yield)
-    gen_effects[df$GEN] +                   # Random Effect (lmer will catch this)
-    rnorm(n, mean = 0, sd = 450)            # Residual Error
+  interaction_term <- (df$PRECTOT_ACC * df$SOLAR_RAD) / 25 
+  
+  df$GY <- 1500 + 
+    (18 * df$PHT) +
+    (1.5 * df$PRECTOT_ACC) +
+    (1.2 * (df$PRECTOT_ACC * df$SOLAR_RAD) / 25) +  
+    (-80 * (df$T2M_MAX - 28)) +
+    gen_effects[df$GEN] +                   
+    rnorm(n, mean = 0, sd = 300)
   
   # Ensure realistic positive values
   df$GY <- ifelse(df$GY < 500, 500, df$GY)
