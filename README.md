@@ -2,7 +2,7 @@
 
 ![R](https://img.shields.io/badge/Language-R-276DC3?style=for-the-badge&logo=r&logoColor=white)
 ![Domain](https://img.shields.io/badge/Domain-AgriTech-4CAF50?style=for-the-badge&logo=leaf&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Active-blue?style=for-the-badge)
 
 > **An automated feature selection framework using Particle Swarm Optimization (PSO) to identify key climatic and phenotypic drivers of Upland Rice productivity.**
 
@@ -63,7 +63,7 @@ This project includes a **Synthetic Data Generator** that simulates realistic ag
    git clone [https://github.com/your-username/pso-rice-yield-selection.git](https://github.com/your-username/pso-rice-yield-selection.git)
    ```
    
-2. **Open the Project**: Double-click rice-yield-optimization.Rproj to open RStudio with the correct environment context.
+2. **Open the Project**: Double-click *rice-yield-optimization.Rproj* to open RStudio with the correct environment context.
 
 3. **Run the Pipeline**: Open main.R and execute.
   *Note*: The script will automatically check for data. If missing, it triggers R/generate_synthetic.R to create a fresh dataset.
@@ -74,15 +74,15 @@ This project includes a **Synthetic Data Generator** that simulates realistic ag
 
 ```text
 rice-yield-optimization/
-├── data/                  # Generated synthetic datasets (excluded from git)
-├── output/                # Logs, saved models (.rds), and PSO results
-├── R/                     # Modularized functions
+├── data/                     # Generated synthetic datasets (excluded from git)
+├── output/                   # Logs, saved models (.rds), and PSO results
+├── R/                        # Modularized functions
 │   ├── generate_synthetic.R  # Simulates agronomic data logic
 │   ├── model_utils.R         # Wrapper for LM/RF training & CV
 │   └── process_data.R        # Data cleaning pipeline
-├── main.R                 # Orchestrator script (Configuration & Execution)
-├── .gitignore             # Git configuration
-└── README.md              # Documentation
+├── main.R                    # Orchestrator script (Configuration & Execution)
+├── .gitignore                # Git configuration
+└── README.md                 # Documentation
 ```
 
 ## 🔮 Roadmap & Contributions
