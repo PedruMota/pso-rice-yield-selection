@@ -60,7 +60,7 @@ This project includes a **Synthetic Data Generator** that simulates realistic ag
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/pso-rice-yield-selection.git](https://github.com/your-username/pso-rice-yield-selection.git)
+   git clone [https://github.com/PedruMota/pso-rice-yield-selection.git](https://github.com/PedruMota/pso-rice-yield-selection.git)
    ```
    
 2. **Open the Project**: Double-click *rice-yield-optimization.Rproj* to open RStudio with the correct environment context.
